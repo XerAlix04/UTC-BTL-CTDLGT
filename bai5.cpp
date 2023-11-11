@@ -4,7 +4,7 @@ using namespace std;
 class String{
 public: 
     string str;
-    String();
+    String(){};
 	String(string s){
         str = s;
     }
@@ -67,7 +67,7 @@ public:
         cin >> str;
     }
     void output(){
-        cout << "Kết quả: " << str << endl;
+        cout << str << endl;
     }
 };
 
