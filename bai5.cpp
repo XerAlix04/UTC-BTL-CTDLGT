@@ -64,18 +64,18 @@ public:
     }
     void input(){
         cout << "Nhập xâu: ";
-        cin >> str;
+        getline (cin, str);
     }
     void output(){
         cout << str << endl;
     }
 };
 
+String str;
+
 void run(){
-    String str;
-    str.input();
-    while(true){
-        int choice, n;
+    	int choice, n, i;
+		str.input();
         cout << "-------------------------------------------------------\n";
         cout << "Nhập 1 để: Cắt các ký trắng (dấu cách) ở hai đầu của xâu \n";
         cout << "Nhập 2 để: Cắt toàn bộ ký tự trắng thừa có trong xâu \n";
@@ -87,7 +87,8 @@ void run(){
         cout << "Nhập 8 để: Trích ra n ký tự kể từ vị trí thứ i của xâu \n";
         cout << "Nhập 9 để: Thoát \n";
         cout << "-------------------------------------------------------" << endl;
-        cout << "Nhập từ 1-9: "; cin >> choice;
+        cout << "Nhập từ 1-9: "; 
+		scanf ("%d", &choice);
         switch (choice){
         case 1:
             str.trimFrontBack();
@@ -118,7 +119,6 @@ void run(){
             str.extractLeft(n);
             break;
         case 8:
-            int i;
             cout << "Nhập i: "; cin >> i; cout << "Nhập n: "; cin >> n;
             str.extractMid(i,n);
             break;
@@ -128,9 +128,8 @@ void run(){
             }
             break;
         default:
-            cout << "--- Vui lòng nhập số từ 1 đến 8 ---" << endl;
+            cout << "--- Vui lòng nhập số từ 1 đến 9 ---" << endl;
         }
-    }
 }
 int main(){
     run();
