@@ -179,9 +179,7 @@ class dlist{
 			}
 			num--;
 		}
-        void NhapHoSoHS(Student x){
 
-        }
         void NhapDanhSachHS(int n){
             Student x;
             int m;
@@ -209,6 +207,19 @@ class dlist{
             }
             
         }
+        void InXepLoaiHS(){
+            Student x;
+            for (dlist::iterator it = HS.begin(); it != HS.end(); it++){
+                node *t = it.getcurr();
+                x = t->getelem();
+                cout << x.HoTen << "\n" << "Xếp loại: ";
+                if (x.Diem>=8.5) cout << "Học sinh Giỏi";
+                else if (x.Diem>=7.0) cout << "Học sinh Khá";
+                else if (x.Diem>=5.5) cout << "Học sinh Trung bình";
+                else if (x.Diem>=4.0) cout << "Học sinh Trung bình yếu"; 
+                else cout << "Học sinh Kém";  
+            }
+        }
         void InDanhSachHS(){
             Student x;
             for (dlist::iterator it = HS.begin(); it != HS.end(); it++){
@@ -217,49 +228,84 @@ class dlist{
                 cout << x.HoTen << "\n" << x.Lop << "\n" << x.SDT << "\n" << x.Diem; 
             }
         }
-        void TimHS(){
-            
+        void TimHS(string name){
+            Student x;
+            for (dlist::iterator it = HS.begin(); it != HS.end(); it++){
+                node *t = it.getcurr();
+                x = t->getelem();
+                if (x.HoTen==name) cout << x.SDT;
+            }
         }
-        void AddHS(){}
+        void AddHS(string name, string cl, int phone, float grade){
+            Student x;
+            x.HoTen=name; x.Lop=cl; x.SDT=phone; x.Diem=grade;
+            push_back(x);
+        }
         void DeleteLop(){}
         void SortHS(){}
         void Insert(){}
-        void Save(){}
+        void Save(){
+            string filename;
+            Student x;
+            cout << "Nhập tên file: "; cin >> filename;
+            ofstream file(filename);
+            if (!file.is_open()) {
+                cout << "Không thể mở tệp" << endl;
+            }
+            for (dlist::iterator it = HS.begin(); it != HS.end(); it++){
+                node *t = it.getcurr();
+                x = t->getelem();
+                file << x.HoTen << "\n";
+                file << x.Lop << "\n";
+                file << x.SDT << "\n";
+                file << x.Diem << "\n";
+            }
+            file.close();
+        }
 };
 
 dlist HS;
 
 int main(){
-    int choice, n;
+    int choice, n, phone;
+    string name, cl;
+    float grade;
+    cout << "Nhập 1 để nhập từ bàn phím \n";
+    cout << "Nhập 2 để nhập từ file \n";
+    cin >> n;
+    if (n!=1 && n!=2) cout << "--- Vui lòng nhập 1 hoặc 2 ---" << endl;
+    else HS.NhapDanhSachHS(n);
+
         cout << "-------------------------------------------------------\n";
-        cout << "Nhập 1 để: Nhập danh sách học sinh từ bàn phím hoặc từ file \n";
-        cout << "Nhập 2 để: In ra danh sách học sinh gồm tên và xếp loại \n";
-        cout << "Nhập 3 để: In ra danh sách học sinh gồm các thông tin đầy đủ \n";
-        cout << "Nhập 4 để: Tìm học sinh, in ra số điện thoại của học sinh đó \n";
-        cout << "Nhập 5 để: Bổ sung hồ sơ học sinh mới vào danh sách \n";
-        cout << "Nhập 6 để: Loại bỏ tất cả học sinh của một lớp khỏi danh sách \n";
-        cout << "Nhập 7 để: Sắp xếp danh sách học sinh theo thứ tự giảm dần điểm trung bình \n";
-        cout << "Nhập 8 để: Chèn hồ sơ học sinh mới vào danh sách đã sắp xếp \n";
-        cout << "Nhập 9 để: Lưu trữ lại danh sách học sinh đã thay đổi \n";
+        cout << "Nhập 1 để: In ra danh sách học sinh gồm tên và xếp loại \n";
+        cout << "Nhập 2 để: In ra danh sách học sinh gồm các thông tin đầy đủ \n";
+        cout << "Nhập 3 để: Tìm học sinh, in ra số điện thoại của học sinh đó \n";
+        cout << "Nhập 4 để: Bổ sung hồ sơ học sinh mới vào danh sách \n";
+        cout << "Nhập 5 để: Loại bỏ tất cả học sinh của một lớp khỏi danh sách \n";
+        cout << "Nhập 6 để: Sắp xếp danh sách học sinh theo thứ tự giảm dần điểm trung bình \n";
+        cout << "Nhập 7 để: Chèn hồ sơ học sinh mới vào danh sách đã sắp xếp \n";
+        cout << "Nhập 8 để: Lưu trữ lại danh sách học sinh đã thay đổi \n";
+        cout << "Nhập 9 để: Thoát \n";
         cout << "-------------------------------------------------------" << endl;
         cout << "Nhập từ 1-9: ";
         cin >> choice;
         switch (choice){
         case 1:
-            cout << "Nhập 1 để nhập từ bàn phím \n";
-            cout << "Nhập 2 để nhập từ file \n";
-            cin >> n;
-            if (n!=1 && n!=2) cout << "--- Vui lòng nhập 1 hoặc 2 ---" << endl;
-            else HS.NhapDanhSachHS(n);
+            HS.InXepLoaiHS();
             break;
         case 2:
             HS.InDanhSachHS();
             break;
         case 3:
-            
+            cout << "Nhập tên học sinh cần tìm: "; getline (cin, name);
+            HS.TimHS(name);
             break;
         case 4:
-            
+            cout << "Nhập tên học sinh mới: "; getline (cin, name);
+            cout << "Nhập lớp: "; getline (cin, cl);
+            cout << "Nhập số điện thoại: "; cin >> phone;
+            cout << "Nhập điểm trung bình: "; cin >> grade;
+            HS.AddHS(name, cl, phone, grade);
             break;
         case 5:
             
@@ -274,7 +320,9 @@ int main(){
             
             break;
         case 9:
-            
+            for (int i = 0; i < 6; i++){
+                cout << "END" << endl;
+            }
             break;
         default:
             cout << "--- Vui lòng nhập số từ 1 đến 9 ---" << endl;
