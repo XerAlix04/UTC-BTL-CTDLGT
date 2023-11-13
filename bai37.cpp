@@ -179,7 +179,30 @@ class dlist{
 			}
 			num--;
 		}
-
+        void insert(node *p, Student x){
+            if(num==0) head=tail=new node(x);
+            else{
+                node *q;
+                q->setelem(x);
+                q->setnext(p->getnext());
+                p->getnext()->setprev(q);
+                q->setprev(p);
+                p->setnext(q);
+            }
+            num++;
+        }
+        void remove(node *p){
+            p->getprev()->setnext(p->getnext());
+            p->getnext()->setprev(p->getprev());
+            p->setnext(NULL);
+            p->setprev(NULL);
+            delete p;
+        }
+};
+class Manager{
+    node *head, *tail;
+    dlist HS;
+    public:
         void NhapDanhSachHS(int n){
             Student x;
             int m;
@@ -190,7 +213,7 @@ class dlist{
                     cout << "Nhập lớp: "; getline (cin, x.Lop);
                     cout << "Nhập số điện thoại: "; cin >> x.SDT;
                     cout << "Nhập điểm trung bình: "; cin >> x.Diem;
-                    push_back(x);
+                    HS.push_back(x);
                 }
             }
             else if (n==2){
@@ -201,7 +224,7 @@ class dlist{
                     cout << "Không thể mở tệp" << endl;
                 }
                 while (file >> x.HoTen >> x.Lop >> x.SDT >> x.Diem){
-                    push_back(x);
+                    HS.push_back(x);
                 }
                 file.close();
             }
@@ -234,16 +257,72 @@ class dlist{
                 node *t = it.getcurr();
                 x = t->getelem();
                 if (x.HoTen==name) cout << x.SDT;
+                break;
             }
         }
         void AddHS(string name, string cl, int phone, float grade){
             Student x;
             x.HoTen=name; x.Lop=cl; x.SDT=phone; x.Diem=grade;
-            push_back(x);
+            HS.push_back(x);
         }
-        void DeleteLop(){}
-        void SortHS(){}
-        void Insert(){}
+        void DeleteLop(string cl){
+            Student x;
+            for (dlist::iterator it = HS.begin(); it != HS.end(); it++){
+                node *t = it.getcurr();
+                x = t->getelem();
+                if (x.Lop==cl) HS.remove(t); 
+            }
+        }
+        void SortHS(){
+            node *h = head;
+            node *t = tail;
+            quickSort(h,t);
+        }
+        void quickSort (node *h, node *t){
+            if (t!=NULL && h!=t && t!=h->getnext()){
+                node *p = Partition(h,t);
+                quickSort(h, p->getprev());
+                quickSort(p->getnext(), t);
+            }
+        }
+        node *Partition(node *h, node *t){
+            Student x = t->getelem();
+            Student y;
+            node *i = h->getprev();
+            for (dlist::iterator it = HS.begin(); it != HS.end(); it++){
+                node *j = it.getcurr();
+                y = j->getelem();
+                if (y.Diem>=x.Diem){
+                    i = (i==NULL)? h : i->getnext();
+                    swap(&(i->getelem()), &(j->getelem()));
+                }
+            }
+            i = (i==NULL)? h : i->getnext();
+            swap(&(i->getelem()), &(t->getelem()));
+            return i;
+        }
+        void swap(Student *a, Student *b){
+            Student t = *a;
+            *a = *b;
+            *b = t;
+        }
+        void InsertHS(string name, string cl, int phone, float grade){
+            Student x;
+            x.HoTen=name; x.Lop=cl; x.SDT=phone; x.Diem=grade;
+            Student y, z;
+            for (dlist::iterator it = HS.begin(); it != HS.end(); it++){
+                node *t = it.getcurr();
+                if (t!=tail){
+                    node *v = t->getnext();
+                    y = t->getelem();
+                    z = v->getelem();
+                    if (x.Diem<=y.Diem&&x.Diem>=z.Diem){
+                        HS.insert(t, x);
+                        break;
+                    }
+                }
+            }
+        }
         void Save(){
             string filename;
             Student x;
@@ -265,6 +344,7 @@ class dlist{
 };
 
 dlist HS;
+Manager M;
 
 int main(){
     int choice, n, phone;
@@ -274,7 +354,7 @@ int main(){
     cout << "Nhập 2 để nhập từ file \n";
     cin >> n;
     if (n!=1 && n!=2) cout << "--- Vui lòng nhập 1 hoặc 2 ---" << endl;
-    else HS.NhapDanhSachHS(n);
+    else M.NhapDanhSachHS(n);
 
         cout << "-------------------------------------------------------\n";
         cout << "Nhập 1 để: In ra danh sách học sinh gồm tên và xếp loại \n";
@@ -291,33 +371,38 @@ int main(){
         cin >> choice;
         switch (choice){
         case 1:
-            HS.InXepLoaiHS();
+            M.InXepLoaiHS();
             break;
         case 2:
-            HS.InDanhSachHS();
+            M.InDanhSachHS();
             break;
         case 3:
             cout << "Nhập tên học sinh cần tìm: "; getline (cin, name);
-            HS.TimHS(name);
+            M.TimHS(name);
             break;
         case 4:
             cout << "Nhập tên học sinh mới: "; getline (cin, name);
             cout << "Nhập lớp: "; getline (cin, cl);
             cout << "Nhập số điện thoại: "; cin >> phone;
             cout << "Nhập điểm trung bình: "; cin >> grade;
-            HS.AddHS(name, cl, phone, grade);
+            M.AddHS(name, cl, phone, grade);
             break;
         case 5:
-            
+            cout << "Nhập tên lớp cần xóa: "; getline(cin, cl);
+            M.DeleteLop(cl);
             break;
         case 6:
-            
+            M.SortHS();
             break;
         case 7:
-            
+            cout << "Nhập tên học sinh mới: "; getline (cin, name);
+            cout << "Nhập lớp: "; getline (cin, cl);
+            cout << "Nhập số điện thoại: "; cin >> phone;
+            cout << "Nhập điểm trung bình: "; cin >> grade;
+            M.InsertHS(name, cl, phone, grade);
             break;
         case 8:
-            
+            M.Save();
             break;
         case 9:
             for (int i = 0; i < 6; i++){
@@ -327,4 +412,5 @@ int main(){
         default:
             cout << "--- Vui lòng nhập số từ 1 đến 9 ---" << endl;
         }
+    return 0;
 }
