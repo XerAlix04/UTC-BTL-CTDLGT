@@ -141,6 +141,7 @@ class dlist{
 			if(num==0) head=tail=new node(x);
 			else{
 				tail->setnext(new node(x));
+                tail->getnext()->setprev(tail);
 				tail=tail->getnext();
 			}
 			num++;
@@ -149,6 +150,7 @@ class dlist{
 			if(num==0) head=tail=new node(x);
 			else{
 				head->setprev(new node(x));
+                head->getprev()->setnext(head);
 				head=head->getprev();
 			}
 			num++;
@@ -197,6 +199,7 @@ class dlist{
             p->setnext(NULL);
             p->setprev(NULL);
             delete p;
+            num--;
         }
 };
 class Manager{
@@ -251,14 +254,15 @@ class Manager{
                 cout << x.HoTen << "\n" << x.Lop << "\n" << x.SDT << "\n" << x.Diem; 
             }
         }
-        void TimHS(string name){
-            Student x;
+        void TimHS(string name, string cl){
+            Student x; int i=0;
             for (dlist::iterator it = HS.begin(); it != HS.end(); it++){
                 node *t = it.getcurr();
                 x = t->getelem();
-                if (x.HoTen==name) cout << x.SDT;
+                if (x.HoTen==name && x.Lop==cl) cout << x.SDT; i++;
                 break;
             }
+            if (i==0) cout << "Không có học sinh nào tên " << name << " trong lớp " << cl;
         }
         void AddHS(string name, string cl, int phone, float grade){
             Student x;
@@ -279,25 +283,29 @@ class Manager{
             quickSort(h,t);
         }
         void quickSort (node *h, node *t){
-            if (t!=NULL && h!=t && t!=h->getnext()){
+            if (t!=NULL && h!=t && h!=t->getnext()){
                 node *p = Partition(h,t);
                 quickSort(h, p->getprev());
                 quickSort(p->getnext(), t);
             }
         }
         node *Partition(node *h, node *t){
-            Student x = t->getelem();
+            Student x = h->getelem();
             Student y;
             node *i = h->getprev();
-            for (dlist::iterator it = HS.begin(); it != HS.end(); it++){
+            int inum=0;
+            int jnum = HS.size()+1;
+            for (dlist::reverse_iterator it = HS.rbegin(); it != HS.rend(); it++){
                 node *j = it.getcurr();
+                jnum--;
                 y = j->getelem();
                 if (y.Diem>=x.Diem){
-                    i = (i==NULL)? h : i->getnext();
+                    i = (i==NULL)? h : i->getnext(); inum++;
                     swap(&(i->getelem()), &(j->getelem()));
                 }
+                if (inum>jnum) break;
             }
-            i = (i==NULL)? h : i->getnext();
+            i = (i==NULL)? h : i->getnext(); inum++;
             swap(&(i->getelem()), &(t->getelem()));
             return i;
         }
@@ -307,9 +315,8 @@ class Manager{
             *b = t;
         }
         void InsertHS(string name, string cl, int phone, float grade){
-            Student x;
+            Student x, y, z;
             x.HoTen=name; x.Lop=cl; x.SDT=phone; x.Diem=grade;
-            Student y, z;
             for (dlist::iterator it = HS.begin(); it != HS.end(); it++){
                 node *t = it.getcurr();
                 if (t!=tail){
@@ -378,7 +385,8 @@ int main(){
             break;
         case 3:
             cout << "Nhập tên học sinh cần tìm: "; getline (cin, name);
-            M.TimHS(name);
+            cout << "Nhập lớp: "; getline (cin, cl);
+            M.TimHS(name, cl);
             break;
         case 4:
             cout << "Nhập tên học sinh mới: "; getline (cin, name);
